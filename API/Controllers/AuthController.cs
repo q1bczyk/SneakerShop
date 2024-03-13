@@ -4,8 +4,8 @@ namespace API._Controllers
 {
     public class AuthController : BaseApiController
     {
-        [HttpGet]
-        public async Task<ActionResult<string>> Test()
+        [HttpPost("register")]
+        public async Task<ActionResult<string>> CreateAccount()
         {
             return Ok("Hello World!");
         }
