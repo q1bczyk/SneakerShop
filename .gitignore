@@ -96,10 +96,7 @@ bld/
 msbuild.log
 msbuild.err
 msbuild.wrn
-appsettings*.json
-appsettings*.development.json
-appsettings*.staging.json
-appsettings*.production.json
+
 
 # Visual Studio 2015
 .vs/

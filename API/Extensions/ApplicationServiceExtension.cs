@@ -2,9 +2,10 @@ namespace API.Extensions
 {
     public static class ApplicationServiceExtension
     {
-        public static IServiceCollection AddApplicationService(this IServiceCollection services, IConfiguration config)
+       public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
-            
+            services.AddSwaggerGen();
+            return services;
         }
     }
 }
