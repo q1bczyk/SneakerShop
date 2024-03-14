@@ -3,14 +3,13 @@ using API.DTOs.contactDTOs;
 
 namespace API.DTOs.userDTOs
 {
-    public class UserRequestDTO
+    public class UserRequestDTO : UserBaseDTO
     {
-        [Required, EmailAddress]
-        public string Email { get; set; }
         [Required, MinLength(8)]
         public string Password { get; set; }
         [Required, MinLength(8)]
-        public string PasswordRepeated { get; set; }
+        public string PasswordRepeted { get; set; }
+        [Required]
         public ContactRequestDTO Contact { get; set; }
     }
 }

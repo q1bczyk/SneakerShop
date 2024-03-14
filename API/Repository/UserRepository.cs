@@ -16,8 +16,13 @@ namespace API.Repository
         public async Task<User> AddUserAsync(User user)
         {
             await context.Users.AddAsync(user);
-            // await SaveAllAsync();
+            await SaveAllAsync();
             return user;
+        }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await context.Users.FirstOrDefaultAsync(x => x.Email == email);
         }
 
         public async Task<bool> SaveAllAsync()

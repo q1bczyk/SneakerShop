@@ -10,7 +10,7 @@ namespace API.Entities
         [MaxLength(36)]
         public string Id { get; set; }
         public string Name { get; set; }
-        public string LastName { get; set; }
+        public string Lastname { get; set; }
         public string PhoneNumber { get; set; }
         public string Street { get; set; }
         public string StreetNumber { get; set; }

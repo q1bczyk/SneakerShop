@@ -1,3 +1,4 @@
+using API.DTOs.contactDTOs;
 using API.DTOs.userDTOs;
 using API.Entities;
 using AutoMapper;
@@ -9,6 +10,7 @@ namespace API.Helpers
         public AutoMapperProfiles()
         {
             CreateMap<User, UserResponseDTO>();
+            CreateMap<Contact, ContactResponseDTO>();
         }
     }
 }

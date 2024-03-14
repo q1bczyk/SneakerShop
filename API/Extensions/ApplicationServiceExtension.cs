@@ -1,6 +1,7 @@
 using api._Services;
 using API.Data;
 using API.Interfaces;
+using API.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions
@@ -16,7 +17,11 @@ namespace API.Extensions
                 opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IContactRepository, ContactRepository>();
 
             return services;
         }
