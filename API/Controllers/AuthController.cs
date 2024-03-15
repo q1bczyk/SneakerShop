@@ -1,7 +1,9 @@
 using System.Security.Cryptography;
 using System.Text;
+using API.DTOs.loginDTOs;
 using API.DTOs.userDTOs;
 using API.Entities;
+using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +15,14 @@ namespace API._Controllers
         private readonly IMapper mapper;
         private readonly IUserRepository userRepository;
         private readonly IContactRepository contactRepository;
+        private readonly ITokenService tokenService;
 
-        public AuthController(IMapper mapper, IUserRepository userRepository, IContactRepository contactRepository)
+        public AuthController(IMapper mapper, IUserRepository userRepository, IContactRepository contactRepository, ITokenService tokenService)
         {
             this.mapper = mapper;
             this.userRepository = userRepository;
             this.contactRepository = contactRepository;
+            this.tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -60,5 +64,29 @@ namespace API._Controllers
             return Ok(mapper.Map<UserResponseDTO>(newUser));
 
         }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<LoggedUserdDTO>> Login(LoginRequestDTO loginRequestDTO)
+        {
+            var user = await userRepository.GetUserByEmail(loginRequestDTO.Email);
+
+            if(user == null)
+                return NotFound("User doesn't exist!");
+            
+            if(AuthMethodExtension.DecryptPassword(loginRequestDTO.Password, user.PasswordSalt, user.Password) == false)
+                return Unauthorized("Wrong password or email!");
+
+            string token = tokenService.CreateToken(user.Email, user.Role);
+
+            var loggedUserData = new LoggedUserdDTO
+            {
+                Email = user.Email,
+                Role = user.Role,
+                Token = token,
+            };
+
+            return Ok(loggedUserData);
+        }
+
     }
 }
