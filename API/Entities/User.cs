@@ -13,6 +13,7 @@ namespace API.Entities
         public byte [] Password { get; set; }
         public byte[] PasswordSalt { get; set; }
         public string Role { get; set; }
+        public bool IsConfirmed { get; set;}
         public List<Contact> Contacts { get; set; } = new();
     }
 }

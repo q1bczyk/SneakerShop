@@ -43,7 +43,8 @@ namespace API._Controllers
                 Email = userRequestDTO.Email,
                 Password = hmac.ComputeHash(Encoding.UTF8.GetBytes(userRequestDTO.Password)),
                 PasswordSalt = hmac.Key,
-                Role = "user"
+                Role = "user",
+                IsConfirmed = false,
             };
 
             await userRepository.AddUserAsync(newUser);
@@ -72,9 +73,12 @@ namespace API._Controllers
 
             if(user == null)
                 return NotFound("User doesn't exist!");
-            
+
             if(AuthMethodExtension.DecryptPassword(loginRequestDTO.Password, user.PasswordSalt, user.Password) == false)
                 return Unauthorized("Wrong password or email!");
+
+            if(!user.IsConfirmed)
+                return BadRequest("Account is not active!");
 
             string token = tokenService.CreateToken(user.Email, user.Role);
 
