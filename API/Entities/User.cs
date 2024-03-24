@@ -1,19 +1,10 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities
 {
-    public class User
+    public class User : IdentityUser
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [MaxLength(36)]
-        public string Id { get; set; }
-        public string Email { get; set; }
-        public byte [] Password { get; set; }
-        public byte[] PasswordSalt { get; set; }
-        public string Role { get; set; }
-        public bool IsConfirmed { get; set;}
+        public List<Role> Roles { get; set;} = new();
         public List<Contact> Contacts { get; set; } = new();
     }
 }

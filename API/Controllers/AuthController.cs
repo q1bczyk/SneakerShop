@@ -1,11 +1,9 @@
-using System.Security.Cryptography;
-using System.Text;
 using API.DTOs.loginDTOs;
 using API.DTOs.userDTOs;
 using API.Entities;
-using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API._Controllers
@@ -16,38 +14,50 @@ namespace API._Controllers
         private readonly IUserRepository userRepository;
         private readonly IContactRepository contactRepository;
         private readonly ITokenService tokenService;
+        private readonly UserManager<User> userManager;
+        private readonly RoleManager<Role> roleManager;
 
-        public AuthController(IMapper mapper, IUserRepository userRepository, IContactRepository contactRepository, ITokenService tokenService)
+        public AuthController(IMapper mapper, IUserRepository userRepository, IContactRepository contactRepository, ITokenService tokenService, UserManager<User> userManager, RoleManager<Role> roleManager)
         {
             this.mapper = mapper;
             this.userRepository = userRepository;
             this.contactRepository = contactRepository;
             this.tokenService = tokenService;
+            this.userManager = userManager;
+            this.roleManager = roleManager;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<UserResponseDTO>> CreateAccount(UserRequestDTO userRequestDTO)
         {
-            if(userRequestDTO.Password != userRequestDTO.PasswordRepeted)
+            if (userRequestDTO.Password != userRequestDTO.PasswordRepeted)
                 return BadRequest("Repeted password is incorrect!");
 
-            var userExist = await userRepository.GetUserByEmail(userRequestDTO.Email);
+            var userExist = await userRepository.GetUserByEmail(userRequestDTO.Email.ToLower());
 
-            if(userExist != null)
+            if (userExist != null)
                 return BadRequest("Email is taken!");
-
-            using var hmac = new HMACSHA512();
 
             var newUser = new User
             {
-                Email = userRequestDTO.Email,
-                Password = hmac.ComputeHash(Encoding.UTF8.GetBytes(userRequestDTO.Password)),
-                PasswordSalt = hmac.Key,
-                Role = "user",
-                IsConfirmed = false,
+                Email = userRequestDTO.Email.ToLower(),
+                UserName = userRequestDTO.Email.ToLower(),
             };
 
-            await userRepository.AddUserAsync(newUser);
+            // var roleExists = await roleManager.RoleExistsAsync("User");
+            // if (!roleExists)
+            // {
+            //     // Jeśli rola nie istnieje, możesz ją utworzyć
+            //     var createRoleResult = await roleManager.CreateAsync(new Role { Name = "User"});
+            //     if (!createRoleResult.Succeeded)
+            //         return BadRequest(createRoleResult.Errors);
+            // }
+
+            var result = await userManager.CreateAsync(newUser, userRequestDTO.Password);
+            await userManager.AddToRoleAsync(newUser, "User");
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
 
             var contact = new Contact
             {
@@ -69,27 +79,23 @@ namespace API._Controllers
         [HttpPost("login")]
         public async Task<ActionResult<LoggedUserdDTO>> Login(LoginRequestDTO loginRequestDTO)
         {
-            var user = await userRepository.GetUserByEmail(loginRequestDTO.Email);
+            var user = await userRepository.GetUserByEmail(loginRequestDTO.Email.ToLower());
 
-            if(user == null)
-                return NotFound("User doesn't exist!");
+            if (user == null)
+                return Unauthorized("Wrong email or password!");
 
-            if(AuthMethodExtension.DecryptPassword(loginRequestDTO.Password, user.PasswordSalt, user.Password) == false)
-                return Unauthorized("Wrong password or email!");
+            var result = await userManager.CheckPasswordAsync(user, loginRequestDTO.Password);
 
-            if(!user.IsConfirmed)
-                return BadRequest("Account is not active!");
+            if (!result)
+                return Unauthorized("Wrong email or password!");
 
-            string token = tokenService.CreateToken(user.Email, user.Role);
-
-            var loggedUserData = new LoggedUserdDTO
+            LoggedUserdDTO loggedUser = new LoggedUserdDTO
             {
                 Email = user.Email,
-                Role = user.Role,
-                Token = token,
+                Token = await tokenService.CreateToken(user)
             };
 
-            return Ok(loggedUserData);
+            return Ok(loggedUser);
         }
 
     }

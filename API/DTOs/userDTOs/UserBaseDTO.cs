@@ -3,7 +3,7 @@ using API.DTOs.contactDTOs;
 
 namespace API.DTOs.userDTOs
 {
-    public class UserBaseDTO
+    public abstract class UserBaseDTO
     {
         [Required, EmailAddress]
         public string Email { get; set; }
