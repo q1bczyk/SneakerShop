@@ -1,5 +1,6 @@
 using api._Services;
 using API.Data;
+using API.Helpers;
 using API.Interfaces;
 using API.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ namespace API.Extensions
             });
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.Configure<EmailConfig>(config.GetSection("EmailConfig"));
 
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserRepository, UserRepository>();
