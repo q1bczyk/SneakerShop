@@ -22,7 +22,9 @@ namespace API.Repository
 
         public async Task<User> GetUserByEmail(string email)
         {
-            return await context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            return await context.Users
+                .Include(x => x.Roles)
+                .FirstOrDefaultAsync(x => x.Email == email);
         }
 
         public async Task<bool> SaveAllAsync()

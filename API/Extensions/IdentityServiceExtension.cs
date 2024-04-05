@@ -17,7 +17,8 @@ public static class IdentityServiceExtension
         })
         .AddRoles<Role>()
         .AddRoleManager<RoleManager<Role>>()
-        .AddEntityFrameworkStores<DataContext>();
+        .AddEntityFrameworkStores<DataContext>()
+        .AddTokenProvider<DataProtectorTokenProvider<User>>(TokenOptions.DefaultProvider);
 
         services.AddAuthentication(options =>
           {

@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using API.DTOs.contactDTOs;
 
 namespace API.DTOs.userDTOs
 {

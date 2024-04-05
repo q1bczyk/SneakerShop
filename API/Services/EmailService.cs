@@ -19,7 +19,7 @@ namespace API.Services
             Port = config.Value.Port;
             Key = config.Value.Key;
 
-            stmp = new SmtpClient("stmp.gmail.com")
+            stmp = new SmtpClient("smtp.gmail.com")
             {
                 Port = Port,
                 UseDefaultCredentials = false,
@@ -28,14 +28,15 @@ namespace API.Services
             };
         }
 
-        public async Task<bool> SendEmailAsync(string recipient)
+        public async Task<bool> SendEmailAsync(string recipient, string confirmationLink)
         {
             MailMessage mailMessage = new MailMessage(EmailSender, recipient)
             {
                 Subject = "Sneakers Shop - Confirm Account",
-                Body = "Kliknije w link żeby potwierdzić swoje konto: "
+                Body = "Kliknij w link żeby potwierdzić swoje konto: " + confirmationLink
             };
 
+            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
             await stmp.SendMailAsync(mailMessage);
 
             return true;

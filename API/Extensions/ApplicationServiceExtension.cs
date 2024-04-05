@@ -3,6 +3,7 @@ using API.Data;
 using API.Helpers;
 using API.Interfaces;
 using API.Repository;
+using API.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions
@@ -24,6 +25,7 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IContactRepository, ContactRepository>();
+            services.AddScoped<IEmailService, EmailService>();
 
             return services;
         }

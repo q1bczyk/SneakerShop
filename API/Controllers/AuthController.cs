@@ -1,4 +1,5 @@
 using API.DTOs.loginDTOs;
+using API.DTOs.RoleDTOs;
 using API.DTOs.userDTOs;
 using API.Entities;
 using API.Interfaces;
@@ -10,21 +11,23 @@ namespace API._Controllers
 {
     public class AuthController : BaseApiController
     {
-        private readonly IMapper mapper;
-        private readonly IUserRepository userRepository;
-        private readonly IContactRepository contactRepository;
-        private readonly ITokenService tokenService;
-        private readonly UserManager<User> userManager;
-        private readonly RoleManager<Role> roleManager;
+        private readonly IMapper _mapper;
+        private readonly IUserRepository _userRepository;
+        private readonly IContactRepository _contactRepository;
+        private readonly ITokenService _tokenService;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
+        private readonly IEmailService _emailService;
 
-        public AuthController(IMapper mapper, IUserRepository userRepository, IContactRepository contactRepository, ITokenService tokenService, UserManager<User> userManager, RoleManager<Role> roleManager)
+        public AuthController(IMapper mapper, IUserRepository userRepository, IContactRepository contactRepository, ITokenService tokenService, UserManager<User> userManager, RoleManager<Role> roleManager, IEmailService emailService)
         {
-            this.mapper = mapper;
-            this.userRepository = userRepository;
-            this.contactRepository = contactRepository;
-            this.tokenService = tokenService;
-            this.userManager = userManager;
-            this.roleManager = roleManager;
+            _mapper = mapper;
+            _userRepository = userRepository;
+            _contactRepository = contactRepository;
+            _tokenService = tokenService;
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -33,7 +36,7 @@ namespace API._Controllers
             if (userRequestDTO.Password != userRequestDTO.PasswordRepeted)
                 return BadRequest("Repeted password is incorrect!");
 
-            var userExist = await userRepository.GetUserByEmail(userRequestDTO.Email.ToLower());
+            var userExist = await _userRepository.GetUserByEmail(userRequestDTO.Email.ToLower());
 
             if (userExist != null)
                 return BadRequest("Email is taken!");
@@ -53,11 +56,17 @@ namespace API._Controllers
             //         return BadRequest(createRoleResult.Errors);
             // }
 
-            var result = await userManager.CreateAsync(newUser, userRequestDTO.Password);
-            await userManager.AddToRoleAsync(newUser, "User");
+            var result = await _userManager.CreateAsync(newUser, userRequestDTO.Password);
+            await _userManager.AddToRoleAsync(newUser, "User");
 
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
+
+            var confirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+
+            var confirmationLink = $"{Url.ActionContext.HttpContext.Request.Scheme}://{Url.ActionContext.HttpContext.Request.Host}/account/confirmEmail?userId={newUser.Id}&token={confirmToken}";
+
+            await _emailService.SendEmailAsync(newUser.Email, confirmationLink);
 
             var contact = new Contact
             {
@@ -70,32 +79,45 @@ namespace API._Controllers
                 UserId = newUser.Id,
             };
 
-            await contactRepository.AddContactAsync(contact);
+            await _contactRepository.AddContactAsync(contact);
 
-            return Ok(mapper.Map<UserResponseDTO>(newUser));
+            return Ok(_mapper.Map<UserResponseDTO>(newUser));
 
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<LoggedUserdDTO>> Login(LoginRequestDTO loginRequestDTO)
         {
-            var user = await userRepository.GetUserByEmail(loginRequestDTO.Email.ToLower());
+            var user = await _userRepository.GetUserByEmail(loginRequestDTO.Email.ToLower());
 
             if (user == null)
                 return Unauthorized("Wrong email or password!");
 
-            var result = await userManager.CheckPasswordAsync(user, loginRequestDTO.Password);
+            var result = await _userManager.CheckPasswordAsync(user, loginRequestDTO.Password);
 
             if (!result)
                 return Unauthorized("Wrong email or password!");
 
-            LoggedUserdDTO loggedUser = new LoggedUserdDTO
-            {
-                Email = user.Email,
-                Token = await tokenService.CreateToken(user)
-            };
+            LoggedUserdDTO loggedUser = _mapper.Map<LoggedUserdDTO>(user);
+            loggedUser.Token = await _tokenService.CreateToken(user);
 
             return Ok(loggedUser);
+        }
+
+        [HttpGet("confirmEmail")]
+        public async Task<ActionResult<string>> ConfirmEmail(string userId, string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if(user == null)
+                return NotFound("User doesn't exist!");
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+
+            if(!result.Succeeded)
+                return BadRequest("Account activation failed!");
+
+            return Ok("Account is active now!");
         }
 
     }
