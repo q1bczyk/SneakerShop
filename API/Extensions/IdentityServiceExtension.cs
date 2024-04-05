@@ -18,7 +18,13 @@ public static class IdentityServiceExtension
         .AddRoles<Role>()
         .AddRoleManager<RoleManager<Role>>()
         .AddEntityFrameworkStores<DataContext>()
-        .AddTokenProvider<DataProtectorTokenProvider<User>>(TokenOptions.DefaultProvider);
+        .AddTokenProvider<DataProtectorTokenProvider<User>>(TokenOptions.DefaultProvider)
+        .AddTokenProvider<DataProtectorTokenProvider<User>>(TokenOptions.DefaultEmailProvider);
+        
+        services.Configure<DataProtectionTokenProviderOptions>(options =>
+        {
+            options.TokenLifespan = TimeSpan.FromHours(1);
+        });
 
         services.AddAuthentication(options =>
           {
