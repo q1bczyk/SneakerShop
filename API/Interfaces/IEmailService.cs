@@ -2,6 +2,6 @@ namespace API.Interfaces
 {
     public interface IEmailService
     {
-        Task<bool> SendEmailAsync(string recipient, string confirmationLink);
+        Task<bool> SendConfirmEmailAsync(string recipient, string userId, string token);
     }
 }

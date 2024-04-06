@@ -1,5 +1,5 @@
+using API.DTOs.EmailDTOs;
 using API.DTOs.loginDTOs;
-using API.DTOs.RoleDTOs;
 using API.DTOs.userDTOs;
 using API.Entities;
 using API.Interfaces;
@@ -30,7 +30,7 @@ namespace API._Controllers
             _emailService = emailService;
         }
 
-        [HttpPost("register")]
+        [HttpPost("Register")]
         public async Task<ActionResult<UserResponseDTO>> CreateAccount(UserRequestDTO userRequestDTO)
         {
             if (userRequestDTO.Password != userRequestDTO.PasswordRepeted)
@@ -41,20 +41,8 @@ namespace API._Controllers
             if (userExist != null)
                 return BadRequest("Email is taken!");
 
-            var newUser = new User
-            {
-                Email = userRequestDTO.Email.ToLower(),
-                UserName = userRequestDTO.Email.ToLower(),
-            };
-
-            // var roleExists = await roleManager.RoleExistsAsync("User");
-            // if (!roleExists)
-            // {
-            //     // Jeśli rola nie istnieje, możesz ją utworzyć
-            //     var createRoleResult = await roleManager.CreateAsync(new Role { Name = "User"});
-            //     if (!createRoleResult.Succeeded)
-            //         return BadRequest(createRoleResult.Errors);
-            // }
+            var newUser = _mapper.Map<User>(userRequestDTO);
+            newUser.UserName = userRequestDTO.Email.ToLower();
 
             var result = await _userManager.CreateAsync(newUser, userRequestDTO.Password);
             await _userManager.AddToRoleAsync(newUser, "User");
@@ -64,20 +52,10 @@ namespace API._Controllers
 
             var confirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
 
-            var confirmationLink = $"{Url.ActionContext.HttpContext.Request.Scheme}://{Url.ActionContext.HttpContext.Request.Host}/account/confirmEmail?userId={newUser.Id}&token={confirmToken}";
+            await _emailService.SendConfirmEmailAsync(newUser.Email, newUser.Id,confirmToken);
 
-            await _emailService.SendEmailAsync(newUser.Email, confirmationLink);
-
-            var contact = new Contact
-            {
-                Name = userRequestDTO.Contact.Name,
-                Lastname = userRequestDTO.Contact.Lastname,
-                PhoneNumber = userRequestDTO.Contact.PhoneNumber,
-                Street = userRequestDTO.Contact.Street,
-                StreetNumber = userRequestDTO.Contact.StreetNumber,
-                PostalCode = userRequestDTO.Contact.PostalCode,
-                UserId = newUser.Id,
-            };
+            var contact = _mapper.Map<Contact>(userRequestDTO.Contact);
+            contact.UserId = newUser.Id;
 
             await _contactRepository.AddContactAsync(contact);
 
@@ -85,7 +63,7 @@ namespace API._Controllers
 
         }
 
-        [HttpPost("login")]
+        [HttpPost("Login")]
         public async Task<ActionResult<LoggedUserdDTO>> Login(LoginRequestDTO loginRequestDTO)
         {
             var user = await _userRepository.GetUserByEmail(loginRequestDTO.Email.ToLower());
@@ -104,7 +82,7 @@ namespace API._Controllers
             return Ok(loggedUser);
         }
 
-        [HttpGet("confirmEmail")]
+        [HttpGet("ConfirmEmail")]
         public async Task<ActionResult<string>> ConfirmEmail(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -118,6 +96,24 @@ namespace API._Controllers
                 return BadRequest("Account activation failed!");
 
             return Ok("Account is active now!");
+        }
+
+        [HttpPost("SendConfirmEmail")]
+        public async Task<ActionResult<string>> SendConfirmEmail(EmailRequestDTO emailDTO)
+        {
+            var user = await _userManager.FindByEmailAsync(emailDTO.Email);
+
+            if(user == null)
+                return NotFound("User doesn't exists!");
+
+            if(user.EmailConfirmed)
+                return BadRequest("User is already confirmed!");
+
+            string confirmToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            await _emailService.SendConfirmEmailAsync(user.Email, user.Id, confirmToken);
+            
+            return Ok("Email with a link has been sent!");
         }
 
     }

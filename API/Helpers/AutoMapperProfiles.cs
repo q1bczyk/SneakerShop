@@ -13,7 +13,9 @@ namespace API.Helpers
         {
             CreateMap<User, UserResponseDTO>();
             CreateMap<User, LoggedUserdDTO>();
+            CreateMap<UserRequestDTO, User>(); 
             CreateMap<Contact, ContactResponseDTO>();
+            CreateMap<ContactRequestDTO, Contact>();
             CreateMap<Role, RoleResponseDTO>();
         }
     }
