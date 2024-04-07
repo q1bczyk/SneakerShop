@@ -1,5 +1,6 @@
 using API.DTOs.EmailDTOs;
 using API.DTOs.loginDTOs;
+using API.DTOs.LoginDTOs;
 using API.DTOs.userDTOs;
 using API.Entities;
 using API.Interfaces;
@@ -114,6 +115,39 @@ namespace API._Controllers
             await _emailService.SendConfirmEmailAsync(user.Email, user.Id, confirmToken);
             
             return Ok("Email with a link has been sent!");
+        }
+
+        [HttpPost("PasswordReset")]
+        public async Task<ActionResult<string>> PasswordReset(EmailRequestDTO emailDTO){
+            var user = await _userManager.FindByEmailAsync(emailDTO.Email);
+
+            if(user == null)
+                return NotFound("User doesn't exists!");
+
+            string passwordResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            await _emailService.SendPasswordResetEmailAsync(user.Email, user.Id, passwordResetToken);
+
+            return Ok("Email with password reset link has been sended");
+        }
+
+        [HttpPost("ChangePassword")]
+        public async Task<ActionResult<string>> ChangePassword(string userId, string Token, PasswordResetDTO passwordResetDTO)
+        {
+            if(passwordResetDTO.NewPassword != passwordResetDTO.RepetedPassword)
+                return BadRequest("Repeted password is incorrect!");
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if(user == null)
+                return NotFound("User doesn't exist!");
+
+            var result = await _userManager.ResetPasswordAsync(user, Token, passwordResetDTO.NewPassword);
+
+            if(!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok("Password has been chagned succesfully!");
         }
 
     }
