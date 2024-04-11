@@ -21,11 +21,13 @@ namespace API.Extensions
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.Configure<EmailConfig>(config.GetSection("EmailConfig"));
+            services.Configure<BlobStorageConfig>(config.GetSection("BlobStorageConfig"));
 
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IContactRepository, ContactRepository>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IFileService, FileService>();
 
             return services;
         }

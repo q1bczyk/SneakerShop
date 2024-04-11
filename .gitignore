@@ -103,3 +103,4 @@ appsettings*.production.json
 
 # Visual Studio 2015
 .vs/
+API/appsettings.json
