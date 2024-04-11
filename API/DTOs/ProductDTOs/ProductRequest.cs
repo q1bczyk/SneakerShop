@@ -1,7 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+using API.DTOs.StockDTOs;
+
 namespace API.DTOs.ProductDTOs
 {
-    public class ProductRequest
+    public class ProductRequest : ProductBase
     {
-        public IFormFile []files { get; set; }
+        [Required]
+        public StockRequest[] StockRequest { get; set; }
+        [Required]
+        public IFormFile []Files { get; set; }
     }
 }
