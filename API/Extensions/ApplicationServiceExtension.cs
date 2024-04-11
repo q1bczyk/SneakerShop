@@ -28,6 +28,8 @@ namespace API.Extensions
             services.AddScoped<IContactRepository, ContactRepository>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IStockRepository, StockRepository>();
 
             return services;
         }
