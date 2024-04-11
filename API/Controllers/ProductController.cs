@@ -17,7 +17,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult> AddProduct(ProductRequest productRequest)
         {
-            await _fileService.UploadFileAsync(productRequest.files, "Nike");
+            // await _fileService.UploadFileAsync(productRequest.files, "Nike");
             return Ok("Succes");
         }
 

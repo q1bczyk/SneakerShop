@@ -28,25 +28,36 @@ namespace API.Services
             throw new NotImplementedException();
         }
 
-        public async Task UploadFileAsync(IFormFile[] files, string productName)
+        public async Task<bool> UploadFileAsync(IFormFile[] files, string productName, string producer)
         {
-             int index = 1;
+             for(int i = 0; i < files.Length; i++)
+             {
+                if(IsFileExtensionAllowed(files[i]))
+                    return false;
 
-            foreach(IFormFile file in files)
-            {
-                string fileExtension = "." + Path.GetExtension(file.FileName)?.TrimStart('.').ToLower();
-
-                using(Stream stream = file.OpenReadStream())
+                using(Stream stream = files[i].OpenReadStream())
                 {
-                    await FilesContainer.UploadBlobAsync($"{productName}/{productName + index + fileExtension}", stream);
-                    index++;
+                    await FilesContainer.UploadBlobAsync(GenerateFileName(files[i], productName, producer, i), stream);
                 }
-            }
+             }
+
+             return true;
         }
 
-        // private bool IsFileExtensionAllowed(IFormFile file)
-        // {
-            
-        // }
+        private bool IsFileExtensionAllowed(IFormFile file)
+        {
+            string[] allowedExtensions = {".jpg", ".jpeg", ".png"};
+            string extension = Path.GetExtension(file.FileName)?.ToLower();
+            return allowedExtensions.Contains(extension);
+        }
+
+        private string GenerateFileName(IFormFile file, string productName, string producer, int index)
+        {
+            string fileExtension = "." + Path.GetExtension(file.FileName)?.TrimStart('.').ToLower();
+
+            string fileName = $"{producer}/{productName}/{productName + index + fileExtension}";
+
+            return fileName;
+        }
     }
 }
