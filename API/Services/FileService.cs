@@ -1,6 +1,9 @@
+using System;
 using API.Helpers;
 using API.Interfaces;
+using Azure.Storage;
 using Azure.Storage.Blobs;
+using Azure.Storage.Sas;
 using Microsoft.Extensions.Options;
 
 namespace API.Services
@@ -8,6 +11,9 @@ namespace API.Services
     public class FileService : IFileService
     {
         private readonly BlobContainerClient FilesContainer;
+        private readonly string AccountName;
+        private readonly string Key;
+        private readonly string ContainerName;
         public FileService(IOptions<BlobStorageConfig> config)
         {
             string AccountName = config.Value.AccountName;
@@ -18,14 +24,32 @@ namespace API.Services
 
             FilesContainer = new BlobContainerClient(blobConnection, ContainerName);
         }
-        public Task DeleteFileAsync(string url)
+        public async Task<bool> DeleteFileAsync(string imgPath)
         {
-            throw new NotImplementedException();
+            var uri = new Uri(imgPath);
+            var blobPath = uri.LocalPath.TrimStart('/').Replace($"{ContainerName}/", "");
+            var fileToDelete = FilesContainer.GetBlobClient(blobPath);
+
+            return await fileToDelete.DeleteIfExistsAsync();
         }
 
-        public Task GeneratePublicLink(string url)
+        public async Task<string> GeneratePublicLink(string imgUrl)
         {
-            throw new NotImplementedException();
+            var blobClient = new BlobClient(new Uri(imgUrl), new StorageSharedKeyCredential(AccountName, Key));
+
+            var sasBuilder = new BlobSasBuilder
+            {
+                StartsOn = DateTimeOffset.UtcNow,
+                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
+                Resource = "b"
+            };
+
+            sasBuilder.SetPermissions("rw");
+
+            var sasToken = blobClient.GenerateSasUri(sasBuilder);
+            var publicUrl = sasToken.ToString();
+
+            return publicUrl;
         }
 
         public async Task<bool> UploadFileAsync(IFormFile[] files, string productName, string producer)
