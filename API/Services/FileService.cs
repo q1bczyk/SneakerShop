@@ -55,7 +55,7 @@ namespace API.Services
         {
              for(int i = 0; i < files.Length; i++)
              {
-                if(IsFileExtensionAllowed(files[i]))
+                if(!IsFileExtensionAllowed(files[i]))
                     return false;
 
                 using(Stream stream = files[i].OpenReadStream())
@@ -69,7 +69,7 @@ namespace API.Services
 
         private bool IsFileExtensionAllowed(IFormFile file)
         {
-            string[] allowedExtensions = {".jpg", ".jpeg", ".png"};
+            string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
             string extension = Path.GetExtension(file.FileName)?.ToLower();
             return allowedExtensions.Contains(extension);
         }
@@ -80,7 +80,7 @@ namespace API.Services
 
             string fileName = $"{producer}/{productName}/{productName + index + fileExtension}";
 
-            return fileName;
+            return fileName.Replace(" ", "");
         }
     }
 }

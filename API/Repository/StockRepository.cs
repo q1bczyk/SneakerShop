@@ -13,14 +13,16 @@ namespace API.Repository
         {
             _context = context;
         }
-        public async Task<Stock> AddProductAsync(Stock stock)
+        public async Task<Stock> AddStockAsync(Stock stock)
         {
-            throw new NotImplementedException();
+            await _context.Stocks.AddAsync(stock);
+            await SaveAllAsync();
+            return stock;
         }
 
         public async Task<bool> SaveAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public void Update(Stock stock)

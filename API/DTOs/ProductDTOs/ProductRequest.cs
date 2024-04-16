@@ -6,8 +6,8 @@ namespace API.DTOs.ProductDTOs
     public class ProductRequest : ProductBase
     {
         [Required]
-        public StockRequest[] StockRequest { get; set; }
+        public StockRequest[] Stock { get; set; }
         [Required]
-        public IFormFile []Files { get; set; }
+        public IFormFile[] Files { get; set; }
     }
 }
