@@ -1,5 +1,6 @@
 using API.DTOs.contactDTOs;
 using API.DTOs.loginDTOs;
+using API.DTOs.PhotoDTOs;
 using API.DTOs.ProductDTOs;
 using API.DTOs.RoleDTOs;
 using API.DTOs.StockDTOs;
@@ -25,6 +26,8 @@ namespace API.Helpers
             
             CreateMap<StockRequest, Stock>();
             CreateMap<Stock, StockResponse>();
+            
+            CreateMap<Photo, PhotoResponse>();
         }
     }
 }

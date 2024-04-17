@@ -51,20 +51,20 @@ namespace API.Services
             return publicUrl;
         }
 
-        public async Task<bool> UploadFileAsync(IFormFile[] files, string productName, string producer)
+        public async Task<FileUploadResult> UploadFileAsync(IFormFile file, string productName, string producer, int index)
         {
-             for(int i = 0; i < files.Length; i++)
-             {
-                if(!IsFileExtensionAllowed(files[i]))
-                    return false;
+            if(!IsFileExtensionAllowed(file))
+                return new FileUploadResult(false, "Wrong file extension", null);
 
-                using(Stream stream = files[i].OpenReadStream())
-                {
-                    await FilesContainer.UploadBlobAsync(GenerateFileName(files[i], productName, producer, i), stream);
-                }
-             }
-
-             return true;
+            using(Stream stream = file.OpenReadStream())
+            {
+                string fileName = GenerateFileName(file, productName, producer, index);
+            
+                await FilesContainer.UploadBlobAsync(fileName, stream);
+                string fileUrl = FilesContainer.GetBlobClient(fileName).Uri.ToString();
+                
+                return new FileUploadResult(true, null, fileUrl);
+            }
         }
 
         private bool IsFileExtensionAllowed(IFormFile file)

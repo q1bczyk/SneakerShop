@@ -14,24 +14,43 @@ namespace API.Controllers
         private readonly IMapper _mapper;
         private readonly IProductRepository _productRepository;
         private readonly IStockRepository _stockRepository;
+        private readonly IPhotoRepository _photoRepository;
 
-        public ProductController(IFileService fileService, IMapper mapper, IProductRepository productRepository, IStockRepository stockRepository)
+        public ProductController(IFileService fileService, IMapper mapper, IProductRepository productRepository, IStockRepository stockRepository, IPhotoRepository photoRepository)
         {
             _fileService = fileService;
             _mapper = mapper;
             _productRepository = productRepository;
             _stockRepository = stockRepository;
+            _photoRepository = photoRepository;
         }
 
         [HttpPost]
         public async Task<ActionResult<ProductResponse>> AddProduct(ProductRequest productRequest)
         {
-            Console.WriteLine(productRequest.Stock.Length);
             var productToAdd = _mapper.Map<Product>(productRequest);
             var addedProduct = await _productRepository.AddProductAsync(productToAdd);
 
-            if(!await _fileService.UploadFileAsync(productRequest.Files, productRequest.Model, productRequest.Producer))
-                return BadRequest("Wrong file extension!");
+            for(int i = 0; i < productRequest.Files.Length; i++)
+            {
+                bool isProfilePhoto = false;
+                var fileUploadResult = await _fileService.UploadFileAsync(productRequest.Files[i], addedProduct.Model, addedProduct.Producer, i);
+
+                if(!fileUploadResult.Success)
+                    return BadRequest(fileUploadResult.Error);
+
+                if(i == productRequest.ProfilePhotoIndex)
+                    isProfilePhoto = true;
+
+                var photo = new Photo
+                {
+                    ImgUrl = fileUploadResult.FileUrl,
+                    ProfilePhoto = isProfilePhoto,
+                    ProductId = addedProduct.Id,
+                };
+
+                await _photoRepository.AddPhotoAsync(photo);
+            }
 
             foreach(var stock in productRequest.Stock)
             {
