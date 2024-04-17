@@ -8,6 +8,6 @@ namespace API.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [MaxLength(36)]
-        public int Id { get; set; }
+        public string Id { get; set; }
     }
 }

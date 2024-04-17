@@ -6,5 +6,6 @@ namespace API.Entities
         public string Model { get; set; }
         public int Price { get; set; }
         public List<Stock> Stocks { get; set; } = new();
+        public List<Photo> Photos { get; set; } = new();
     }
 }

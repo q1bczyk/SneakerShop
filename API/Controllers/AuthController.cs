@@ -150,5 +150,12 @@ namespace API._Controllers
             return Ok("Password has been chagned succesfully!");
         }
 
+        // [HttpPost("AddRoles")]
+        // public async Task<ActionResult<string>> AddRoles()
+        // {
+        //     await _roleManager.CreateAsync(new Role { Name = "User"});
+        //     return Ok("Success");
+        // }
+
     }
 }
