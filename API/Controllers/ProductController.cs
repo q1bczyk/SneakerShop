@@ -80,7 +80,14 @@ namespace API.Controllers
         [HttpDelete("{productId}")]
         public async Task<ActionResult<string>> DeleteProduct(string productId)
         {
-            await _productRepository.DeleteProductAsync(productId);
+            var product = await _productRepository.GetProductsById(productId);
+            if(product == null)
+                return NotFound("Product doesn't exist!");
+
+            foreach(var photo in product.Photos)
+                await _fileService.DeleteFileAsync(photo.ImgUrl);
+
+            await _productRepository.DeleteProductAsync(product);
             return Ok("Product deleted succesful!");
         }
 

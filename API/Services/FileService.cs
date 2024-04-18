@@ -15,9 +15,9 @@ namespace API.Services
         private readonly string ContainerName;
         public FileService(IOptions<BlobStorageConfig> config)
         {
-            string AccountName = config.Value.AccountName;
-            string Key = config.Value.Key;
-            string ContainerName = config.Value.ContainerName;
+            AccountName = config.Value.AccountName;
+            Key = config.Value.Key;
+            ContainerName = config.Value.ContainerName;
 
             string blobConnection = $"DefaultEndpointsProtocol=https;AccountName={AccountName};AccountKey={Key};EndpointSuffix=core.windows.net";
 
@@ -25,11 +25,8 @@ namespace API.Services
         }
         public async Task<bool> DeleteFileAsync(string imgPath)
         {
-            var uri = new Uri(imgPath);
-            var blobPath = uri.LocalPath.TrimStart('/').Replace($"{ContainerName}/", "");
-            var fileToDelete = FilesContainer.GetBlobClient(blobPath);
-
-            return await fileToDelete.DeleteIfExistsAsync();
+            var blobClient = new BlobClient(new Uri(imgPath), new StorageSharedKeyCredential(AccountName, Key));
+            return await blobClient.DeleteIfExistsAsync();
         }
 
         public async Task<string> GeneratePublicLink(string imgUrl)

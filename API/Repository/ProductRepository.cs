@@ -20,11 +20,9 @@ namespace API.Repository
             return product;
         }
 
-        public async Task<bool> DeleteProductAsync(string productId)
+        public async Task<bool> DeleteProductAsync(Product product)
         {
-            var productToDelete = await _context.Products
-                                            .FirstOrDefaultAsync(p => p.Id == productId);
-            _context.Remove(productToDelete);
+            _context.Remove(product);
             await SaveAllAsync();
 
             return true;
