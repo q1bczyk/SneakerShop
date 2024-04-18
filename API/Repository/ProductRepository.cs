@@ -20,14 +20,33 @@ namespace API.Repository
             return product;
         }
 
+        public async Task<bool> DeleteProductAsync(string productId)
+        {
+            var productToDelete = await _context.Products
+                                            .FirstOrDefaultAsync(p => p.Id == productId);
+            _context.Remove(productToDelete);
+            await SaveAllAsync();
+
+            return true;
+        }
+
+        public async Task<Product> GetProductsById(string productId)
+        {
+            return await _context.Products
+                .Include(p => p.Stocks)
+                .Include(p => p.Photos)
+                .FirstOrDefaultAsync(p => p.Id == productId);
+        }
+
         public async Task<bool> SaveAllAsync()
         {
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public void Update(Product product)
+        public async Task Update(Product product)
         {
             _context.Entry(product).State = EntityState.Modified;
+            await SaveAllAsync();
         }
     }
 }

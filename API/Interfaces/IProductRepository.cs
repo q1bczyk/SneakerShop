@@ -4,8 +4,10 @@ namespace API.Interfaces
 {
     public interface IProductRepository
     {
-        void Update(Product product);
+        Task Update(Product product);
         Task<Product> AddProductAsync(Product product);
+        Task<Product> GetProductsById(string productId);
+        Task<bool> DeleteProductAsync(string productId);
         Task<bool> SaveAllAsync();
     }
 }

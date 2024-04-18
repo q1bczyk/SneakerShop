@@ -1,10 +1,11 @@
 using API._Controllers;
-using API.DTOs;
+using API.DTOs.Product.PriceDTO;
 using API.DTOs.ProductDTOs;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace API.Controllers
 {
@@ -60,6 +61,27 @@ namespace API.Controllers
             }
 
             return Ok(_mapper.Map<ProductResponse>(addedProduct));
+        }
+
+        [HttpPut("editPrice/{productId}")]
+        public async Task<ActionResult<ProductResponse>> EditPrice(string productId, PriceRequest priceRequest)
+        {
+            var product = await _productRepository.GetProductsById(productId);
+            if(product == null)
+                return NotFound("Product doesn't exists!");
+
+            product.Price = priceRequest.NewPrice;
+
+            await _productRepository.Update(product);
+
+            return Ok(_mapper.Map<ProductResponse>(product));
+        }
+
+        [HttpDelete("{productId}")]
+        public async Task<ActionResult<string>> DeleteProduct(string productId)
+        {
+            await _productRepository.DeleteProductAsync(productId);
+            return Ok("Product deleted succesful!");
         }
 
     }
