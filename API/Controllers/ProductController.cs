@@ -91,5 +91,22 @@ namespace API.Controllers
             return Ok("Product deleted succesful!");
         }
 
+        [HttpGet("{productId}")]
+        public async Task<ActionResult<ProductResponse>> GetProduct(string productId)
+        {
+            var product = await _productRepository.GetProductsById(productId);
+            if(product == null)
+                return NotFound("Product doesn't exist");
+
+            return Ok(_mapper.Map<ProductResponse>(product));
+        }
+
+        [HttpGet("products")]
+        public async Task<ActionResult<List<ProductResponse>>> GetProducts(int page, int amount)
+        {
+            var products = await _productRepository.GetProducts(page, amount);
+            return Ok(products);
+        }
+
     }
 }

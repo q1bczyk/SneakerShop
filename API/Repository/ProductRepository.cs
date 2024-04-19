@@ -28,6 +28,22 @@ namespace API.Repository
             return true;
         }
 
+        public async Task<List<Product>> GetProducts(int page, int amount)
+        {
+            return await _context.Products
+                            .Skip((page - 1) * amount)
+                            .Select(product => new Product
+                            {
+                                Id = product.Id,
+                                Producer = product.Producer,
+                                Model = product.Model,
+                                Price = product.Price,
+                                Stocks = product.Stocks,
+                                Photos = product.Photos.Where(p => p.ProfilePhoto == true).ToList(),
+                            })
+                            .ToListAsync();
+        }
+
         public async Task<Product> GetProductsById(string productId)
         {
             return await _context.Products
