@@ -65,7 +65,7 @@ namespace API.Controllers
         [HttpPut("editPrice/{productId}")]
         public async Task<ActionResult<ProductResponse>> EditPrice(string productId, PriceRequest priceRequest)
         {
-            var product = await _productRepository.GetProductsById(productId);
+            var product = await _productRepository.GetProductById(productId);
             if(product == null)
                 return NotFound("Product doesn't exists!");
 
@@ -79,7 +79,7 @@ namespace API.Controllers
         [HttpDelete("{productId}")]
         public async Task<ActionResult<string>> DeleteProduct(string productId)
         {
-            var product = await _productRepository.GetProductsById(productId);
+            var product = await _productRepository.GetProductById(productId);
             if(product == null)
                 return NotFound("Product doesn't exist!");
 
@@ -93,7 +93,7 @@ namespace API.Controllers
         [HttpGet("{productId}")]
         public async Task<ActionResult<ProductResponse>> GetProduct(string productId)
         {
-            var product = await _productRepository.GetProductsById(productId);
+            var product = await _productRepository.GetProductById(productId);
             if(product == null)
                 return NotFound("Product doesn't exist");
 

@@ -25,6 +25,13 @@ namespace API.Repository
             return await _context.SaveChangesAsync() > 0;
         }
 
+        public async Task<bool> StockExists(string productId, float size)
+        {
+            return await _context.Stocks.AnyAsync(
+                    x => x.ProductId == productId && 
+                    x.Size == size);
+        }
+
         public void Update(Stock stock)
         {
             _context.Entry(stock).State = EntityState.Modified;

@@ -44,7 +44,7 @@ namespace API.Repository
                             .ToListAsync();
         }
 
-        public async Task<Product> GetProductsById(string productId)
+        public async Task<Product> GetProductById(string productId)
         {
             return await _context.Products
                 .Include(p => p.Stocks)
