@@ -4,5 +4,6 @@ namespace API.DTOs.PhotoDTOs
     {
         public string Id { get; set; }
         public string ImgUrl { get; set; } 
+        public bool ProfilePhoto { get; set; }
     }
 }

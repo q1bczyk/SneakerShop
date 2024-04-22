@@ -48,14 +48,14 @@ namespace API.Services
             return publicUrl;
         }
 
-        public async Task<FileUploadResult> UploadFileAsync(IFormFile file, string productName, string producer, int index)
+        public async Task<FileUploadResult> UploadFileAsync(IFormFile file, string productName, string producer)
         {
             if(!IsFileExtensionAllowed(file))
                 return new FileUploadResult(false, "Wrong file extension", null);
 
             using(Stream stream = file.OpenReadStream())
             {
-                string fileName = GenerateFileName(file, productName, producer, index);
+                string fileName = GenerateFileName(file, productName, producer);
             
                 await FilesContainer.UploadBlobAsync(fileName, stream);
                 string fileUrl = FilesContainer.GetBlobClient(fileName).Uri.ToString();
@@ -71,11 +71,13 @@ namespace API.Services
             return allowedExtensions.Contains(extension);
         }
 
-        private string GenerateFileName(IFormFile file, string productName, string producer, int index)
+        private string GenerateFileName(IFormFile file, string productName, string producer)
         {
             string fileExtension = "." + Path.GetExtension(file.FileName)?.TrimStart('.').ToLower();
 
-            string fileName = $"{producer}/{productName}/{productName + index + fileExtension}";
+            string uniqueFileName = Guid.NewGuid().ToString();
+
+            string fileName = $"{producer}/{productName}/{uniqueFileName + fileExtension}";
 
             return fileName.Replace(" ", "");
         }

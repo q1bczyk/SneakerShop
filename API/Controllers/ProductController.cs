@@ -5,7 +5,6 @@ using API.Entities;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace API.Controllers
 {
@@ -35,7 +34,7 @@ namespace API.Controllers
             for(int i = 0; i < productRequest.Files.Length; i++)
             {
                 bool isProfilePhoto = false;
-                var fileUploadResult = await _fileService.UploadFileAsync(productRequest.Files[i], addedProduct.Model, addedProduct.Producer, i);
+                var fileUploadResult = await _fileService.UploadFileAsync(productRequest.Files[i], addedProduct.Model, addedProduct.Producer);
 
                 if(!fileUploadResult.Success)
                     return BadRequest(fileUploadResult.Error);
@@ -98,6 +97,9 @@ namespace API.Controllers
             if(product == null)
                 return NotFound("Product doesn't exist");
 
+            foreach(var photos in product.Photos)
+                photos.ImgUrl = await _fileService.GeneratePublicLink(photos.ImgUrl);
+
             return Ok(_mapper.Map<ProductResponse>(product));
         }
 
@@ -105,7 +107,11 @@ namespace API.Controllers
         public async Task<ActionResult<List<ProductResponse>>> GetProducts(int page, int amount)
         {
             var products = await _productRepository.GetProducts(page, amount);
-            return Ok(products);
+            
+            foreach(var product in products)
+                product.Photos[0].ImgUrl = await _fileService.GeneratePublicLink(product.Photos[0].ImgUrl);
+
+            return Ok(_mapper.Map<List<ProductResponse>>(products));
         }
 
     }
