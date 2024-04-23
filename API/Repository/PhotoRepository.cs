@@ -21,6 +21,18 @@ namespace API.Repository
             return photo;
         }
 
+        public async Task<bool> DeletePhotoAsync(Photo photo)
+        {
+            _context.Remove(photo);
+            await SaveAllAsync();
+            return true;
+        }
+
+        public async Task<Photo> GetPhotoByIdAsync(string id)
+        {
+            return await _context.Photos.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task<bool> SaveAllAsync()
         {
             return await _context.SaveChangesAsync() > 0;

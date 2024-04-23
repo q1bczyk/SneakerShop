@@ -1,5 +1,4 @@
 using API._Controllers;
-using API.DTOs.ProductDTOs;
 using API.DTOs.ProductDTOs.PhotoDTOs;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +27,7 @@ namespace API.Controllers
         [HttpPost("{productId}")]
         public async Task<ActionResult<string>> AddPhoto(PhotoRequest photoRequest, string productId)
         {
-            var product = await _productRepository.GetProductsById(productId);
+            var product = await _productRepository.GetProductById(productId);
             
             if(product == null)
                 return NotFound("Product does not exist!");
@@ -55,8 +54,19 @@ namespace API.Controllers
 
         [HttpDelete("{photoId}")]
         public async Task<ActionResult<string>> DeletePhoto(string photoId)
-        {
+        {            
+            var photoToDelete = await _photoRepository.GetPhotoByIdAsync(photoId);
             
+            if(photoToDelete == null)
+                return NotFound("Photo does not exist!");
+
+            await _fileService.DeleteFileAsync(photoToDelete.ImgUrl);
+
+            await _photoRepository.DeletePhotoAsync(photoToDelete);
+
+            return Ok("Photo has been deleted successful!");
         }
+
+        
     }
 }
