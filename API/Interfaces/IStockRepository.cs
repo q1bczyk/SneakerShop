@@ -7,6 +7,7 @@ namespace API.Interfaces
         void Update(Stock stock);
         Task<Stock> AddStockAsync(Stock stock);
         Task<bool> StockExists(string productId, float size);
+        Task<Stock> GetStock(string stockId);
         Task<bool> SaveAllAsync();
     }
 }

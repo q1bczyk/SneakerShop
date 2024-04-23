@@ -1,5 +1,6 @@
 using API._Controllers;
 using API.DTOs.ProductDTOs;
+using API.DTOs.ProductDTOs.StockDTOs;
 using API.DTOs.StockDTOs;
 using API.Entities;
 using API.Interfaces;
@@ -40,5 +41,27 @@ namespace API.Controllers
 
             return Ok(_mapper.Map<ProductResponse>(product));        
         }
+
+        [HttpPut("{stockId}")]
+        public async Task<ActionResult<ProductResponse>> EditStock(string stockId, StockPUTRequest stockPUTRequest)
+        {
+            var stockToEdit = await _stockRepository.GetStock(stockId);
+
+            if(stockToEdit == null)
+                return NotFound("Size does not exist!");
+
+            stockToEdit.Discount = stockPUTRequest.Discount;
+            stockToEdit.Quantity = stockPUTRequest.Quantity;
+            _stockRepository.Update(stockToEdit);
+            await _stockRepository.SaveAllAsync();
+
+            return Ok(_mapper.Map<StockResponse>(stockToEdit));
+        }
+
+        [HttpDelete("{stockId}")]
+        public async Task<ActionResult<ProductResponse>> DeleteStock(string stockId)
+        {
+            
+        } 
     }
 }

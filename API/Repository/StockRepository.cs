@@ -20,6 +20,13 @@ namespace API.Repository
             return stock;
         }
 
+        public async Task<Stock> GetStock(string stockId)
+        {
+            return await _context.Stocks.FirstOrDefaultAsync(
+                x => x.Id == stockId
+            );
+        }
+
         public async Task<bool> SaveAllAsync()
         {
             return await _context.SaveChangesAsync() > 0;
