@@ -30,7 +30,15 @@ namespace API.Repository
 
         public async Task<Photo> GetPhotoByIdAsync(string id)
         {
-            return await _context.Photos.FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Photos.FirstOrDefaultAsync(
+                x => x.Id == id);
+        }
+
+        public async Task<Photo> GetProfilePhotoAsync(string productId)
+        {
+            return await _context.Photos.FirstOrDefaultAsync(
+                x => x.ProductId == productId && 
+                x.ProfilePhoto == true);
         }
 
         public async Task<bool> SaveAllAsync()

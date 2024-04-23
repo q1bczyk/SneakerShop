@@ -67,6 +67,25 @@ namespace API.Controllers
             return Ok("Photo has been deleted successful!");
         }
 
-        
+        [HttpPut("{photoId}")]
+        public async Task<ActionResult<PhotoResponse>> ChangeProfilePhoto(string photoId, string productId)
+        {
+            var currentProfilePhoto = await _photoRepository.GetProfilePhotoAsync(productId);
+            var newProfilePhoto = await _photoRepository.GetPhotoByIdAsync(photoId);
+
+            if(currentProfilePhoto == null)
+                return NotFound("Product does not exist!");
+            if(newProfilePhoto == null)
+                return NotFound("Photo does not exist!");
+
+            currentProfilePhoto.ProfilePhoto = false;
+            _photoRepository.Update(currentProfilePhoto);
+            newProfilePhoto.ProfilePhoto = true; 
+            _photoRepository.Update(newProfilePhoto);
+
+            await _photoRepository.SaveAllAsync();
+
+            return Ok(_mapper.Map<PhotoResponse>(newProfilePhoto));
+        }
     }
 }

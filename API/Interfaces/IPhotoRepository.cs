@@ -8,6 +8,7 @@ namespace API.Interfaces
         Task<Photo> AddPhotoAsync(Photo photo);
         Task<bool> DeletePhotoAsync(Photo photo);
         Task<Photo> GetPhotoByIdAsync(string id);
+        Task<Photo> GetProfilePhotoAsync(string productId);
         Task<bool> SaveAllAsync();
     }
 }
