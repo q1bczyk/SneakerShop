@@ -20,6 +20,13 @@ namespace API.Repository
             return stock;
         }
 
+        public async Task<bool> DeleteStockAsync(Stock stock)
+        {
+            _context.Stocks.Remove(stock);
+            await SaveAllAsync();
+            return true;
+        }
+
         public async Task<Stock> GetStock(string stockId)
         {
             return await _context.Stocks.FirstOrDefaultAsync(

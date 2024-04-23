@@ -38,7 +38,7 @@ namespace API.Repository
                                 Producer = product.Producer,
                                 Model = product.Model,
                                 Price = product.Price,
-                                Stocks = product.Stocks,
+                                Stocks = product.Stocks.OrderBy(stock => stock.Size).ToList(),
                                 Photos = product.Photos.Where(p => p.ProfilePhoto == true).ToList(),
                             })
                             .ToListAsync();
@@ -47,7 +47,8 @@ namespace API.Repository
         public async Task<Product> GetProductById(string productId)
         {
             return await _context.Products
-                .Include(p => p.Stocks)
+                .Include(p => p.Stocks
+                    .OrderBy(stock => stock.Size))
                 .Include(p => p.Photos)
                 .FirstOrDefaultAsync(p => p.Id == productId);
         }

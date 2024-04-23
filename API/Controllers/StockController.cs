@@ -59,9 +59,16 @@ namespace API.Controllers
         }
 
         [HttpDelete("{stockId}")]
-        public async Task<ActionResult<ProductResponse>> DeleteStock(string stockId)
+        public async Task<ActionResult<string>> DeleteStock(string stockId)
         {
+            var stockToDelete = await _stockRepository.GetStock(stockId);
             
+            if(stockToDelete == null)
+                return NotFound("Stock does not exist!");
+            
+            await _stockRepository.DeleteStockAsync(stockToDelete);
+
+            return Ok("Stock has been deleted successful!");
         } 
     }
 }
