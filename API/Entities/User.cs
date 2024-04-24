@@ -6,6 +6,5 @@ namespace API.Entities
     {
         public List<Role> Roles { get; set;} = new();
         public List<Contact> Contacts { get; set; } = new();
-        public List<Order> Orders { get; set; } = new();
     }
 }

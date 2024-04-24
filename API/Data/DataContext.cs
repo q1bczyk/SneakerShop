@@ -48,10 +48,10 @@ namespace API.Data
                 .WithMany(p => p.Products)
                 .UsingEntity<OrderProduct>();
 
-            builder.Entity<User>()
-                .HasMany(u => u.Orders)
-                .WithOne(o => o.User)
-                .HasForeignKey(o => o.UserId)
+            builder.Entity<Order>()
+                .HasOne(o => o.Contact)
+                .WithMany(c => c.Orders)
+                .HasForeignKey(o => o.ContactId)
                 .IsRequired();
         }
 

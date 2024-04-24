@@ -17,5 +17,6 @@ namespace API.Entities
         public string PostalCode { get; set; }
         public string UserId { get; set; }
         public User User { get; set; } = null!;
+        public List<Order> Orders { get; set; } = new();
     }
 }
