@@ -1,5 +1,6 @@
 using api._Services;
 using API.Data;
+using API.Extensions.OrderExtensions;
 using API.Helpers;
 using API.Interfaces;
 using API.Repository;
@@ -31,6 +32,11 @@ namespace API.Extensions
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IStockRepository, StockRepository>();
             services.AddScoped<IPhotoRepository, PhotoRepository>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderProductRepository, OrderProductRepository>();
+            services.AddScoped<PlaceOrderPossibilityExtension>();
+            services.AddScoped<PlaceOrderExtension>();
 
             return services;
         }
