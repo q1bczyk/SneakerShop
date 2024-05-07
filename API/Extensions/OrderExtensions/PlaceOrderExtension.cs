@@ -8,37 +8,47 @@ namespace API.Extensions.OrderExtensions
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IStockRepository _stockRepository;
-        private readonly IOrderProductRepository _orderProductRepository;
+        private readonly IStockOrderRepository _stockOrderRepository;
 
-        public PlaceOrderExtension(IOrderRepository orderRepository, IStockRepository stockRepository, IOrderProductRepository orderProductRepository)
+        public PlaceOrderExtension(IOrderRepository orderRepository, IStockRepository stockRepository, IStockOrderRepository stockOrderRepository)
         {
             _orderRepository = orderRepository;
             _stockRepository = stockRepository;
-            _orderProductRepository = orderProductRepository;
+            _stockOrderRepository = stockOrderRepository;
         }
 
         public async Task<Order> PlaceOrder(OrderRequest orderRequest)
         {
-            return await AddOrderProduct(orderRequest);
+            return await AddStockOrder(orderRequest);
         }
 
-        private async Task<Order> AddOrderProduct(OrderRequest orderRequest)
+        private async Task<Order> AddStockOrder(OrderRequest orderRequest)
         {
             Order order = await AddOrder(orderRequest);
 
             foreach(var product in orderRequest.Products)
             {
-                OrderProduct orderProduct = new OrderProduct
+                StockOrder StockOrder = new StockOrder
                 {
-                    ProductId = product.StockId,
+                    StockId = product.StockId,
                     OrderId = order.Id,
                     Quantity = product.Quantity,
                 };
 
-                await _orderProductRepository.AddOrderAsync(orderProduct);
+                await _stockOrderRepository.AddOrderAsync(StockOrder);
+                await UpdateStock(product.StockId, product.Quantity);
             }
 
             return order;
+        }
+
+        private async Task UpdateStock(string stockId, int quantity)
+        {
+            var stockToUpdate = await _stockRepository.GetStock(stockId);
+            stockToUpdate.Quantity -= quantity;
+
+            _stockRepository.Update(stockToUpdate);
+            await _stockRepository.SaveAllAsync();
         }
 
         private async Task<Order> AddOrder(OrderRequest orderRequest)

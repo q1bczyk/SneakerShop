@@ -30,8 +30,9 @@ namespace API.Repository
         public async Task<List<Order>> GetAllOrdersAsync(int page, int pageSize)
         {
             return await _context.Orders
-                            .Include(o => o.OrderProducts)
-                                .ThenInclude(op => op.Product)
+                            .Include(o => o.StockOrder)
+                                .ThenInclude(op => op.Stock)
+                                .ThenInclude(s => s.Product)
                             .Include(o => o.Contact)
                             .ToListAsync();
         }
@@ -39,8 +40,9 @@ namespace API.Repository
         public async Task<Order> GetOrderAsync(string id)
         {
             return await _context.Orders
-                            .Include(o => o.OrderProducts)
-                                .ThenInclude(op => op.Product)
+                            .Include(o => o.StockOrder)
+                                .ThenInclude(op => op.Stock)
+                                    .ThenInclude(p => p.Product)
                             .Include(o => o.Contact)
                             .FirstOrDefaultAsync();
         }

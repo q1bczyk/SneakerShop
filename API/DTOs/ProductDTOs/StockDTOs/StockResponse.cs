@@ -1,3 +1,5 @@
+using API.DTOs.ProductDTOs;
+
 namespace API.DTOs.StockDTOs
 {
     public class StockResponse : StockBase

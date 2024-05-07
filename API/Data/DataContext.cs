@@ -13,7 +13,7 @@ namespace API.Data
         public DbSet<Stock> Stocks{ get; set; }
         public DbSet<Photo> Photos{ get; set; }
         public DbSet<Order> Orders{ get; set; }
-        public DbSet<OrderProduct> OrderProducts{ get; set; }
+        public DbSet<StockOrder> StockOrders{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -43,10 +43,10 @@ namespace API.Data
                 .HasForeignKey(p => p.ProductId)
                 .IsRequired();
 
-            builder.Entity<Product>()
-                .HasMany(p => p.Orders)
-                .WithMany(p => p.Products)
-                .UsingEntity<OrderProduct>();
+            builder.Entity<Order>()
+                .HasMany(p => p.Stocks)
+                .WithMany(s => s.Orders)
+                .UsingEntity<StockOrder>();
 
             builder.Entity<Order>()
                 .HasOne(o => o.Contact)

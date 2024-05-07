@@ -34,7 +34,7 @@ namespace API.Extensions
             services.AddScoped<IPhotoRepository, PhotoRepository>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IOrderRepository, OrderRepository>();
-            services.AddScoped<IOrderProductRepository, OrderProductRepository>();
+            services.AddScoped<IStockOrderRepository, StockOrderRepository>();
             services.AddScoped<PlaceOrderPossibilityExtension>();
             services.AddScoped<PlaceOrderExtension>();
 

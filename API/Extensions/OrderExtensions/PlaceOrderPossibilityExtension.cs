@@ -21,7 +21,7 @@ namespace API.Extensions
             return true;
         }
 
-        private async Task<bool> ProductInStock(OrderProductRequest orderProduct)
+        private async Task<bool> ProductInStock(OrderStockRequest orderProduct)
         {
             int stockLeft = await StockExists(orderProduct);
 
@@ -31,7 +31,7 @@ namespace API.Extensions
             return true;
         }
 
-        private async Task<int> StockExists(OrderProductRequest orderProduct)
+        private async Task<int> StockExists(OrderStockRequest orderProduct)
         {
             var stock = await _stockRepository.GetStock(orderProduct.StockId);
 

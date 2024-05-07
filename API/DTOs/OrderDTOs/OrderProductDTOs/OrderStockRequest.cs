@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.DTOs.OrderDTOs
 {
-    public class OrderProductRequest
+    public class OrderStockRequest
     {
         [Required]
         public string StockId { get; set; }

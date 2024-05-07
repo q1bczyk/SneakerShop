@@ -10,6 +10,5 @@ namespace API.Entities
         public List<Stock> Stocks { get; set; } = new();
         public List<Photo> Photos { get; set; } = new();
         public List<Order> Orders { get; set; } = new();
-        public List<OrderProduct> OrderProducts { get; set; } = new();
     }
 }

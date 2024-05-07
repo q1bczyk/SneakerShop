@@ -13,26 +13,19 @@ namespace API.Controllers
     public class OrderController : BaseApiController
     {
         private readonly IOrderService _orderService;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IMapper _mapper;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, IOrderRepository orderRepository, IMapper mapper)
         {
             _orderService = orderService;
+            _orderRepository = orderRepository;
+            _mapper = mapper;
         }
 
         [HttpPost]
         public async Task<ActionResult<Order>> AddOrderAsync(OrderRequest orderRequest)
         {
-            // foreach(var product in orderRequest.Products)
-            // {
-            //     var stock = await _stockRepository.GetStock(product.StockId);
-
-            //     if(stock == null)
-            //         return NotFound("Stock does not exist!");
-
-            //     if(_placOrderExtension.ProductInStock(stock, product) == false)
-            //         return BadRequest("Product out of stock!");
-
-            // }
             try
             {
                 await _orderService.PlaceOrderAsync(orderRequest);
@@ -42,6 +35,13 @@ namespace API.Controllers
             {
                 return StatusCode(ex.StatusCode, ex.Message);
             }
+        }
+
+        [HttpGet("{orderId}")]
+        public async Task<ActionResult<List<Order>>> GetOrder(string orderId)
+        {
+            var order = await _orderRepository.GetOrderAsync(orderId);
+            return Ok(_mapper.Map<OrderResponse>(order));
         }
     }
 }

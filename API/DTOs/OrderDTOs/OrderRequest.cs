@@ -7,6 +7,6 @@ namespace API.DTOs.OrderDTOs
         [Required]
         public string ContactId { get; set; }
         [Required]
-        public OrderProductRequest[] Products { get; set; }
+        public OrderStockRequest[] Products { get; set; }
     }
 }

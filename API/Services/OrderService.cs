@@ -10,13 +10,11 @@ namespace API.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly IMapper _mapper;
         private readonly PlaceOrderPossibilityExtension _placOrderPossibilityExtension;
         private readonly PlaceOrderExtension _placeOrderExtension;
         
-        public OrderService(IMapper mapper, PlaceOrderPossibilityExtension placOrderPossibilityExtension, PlaceOrderExtension placeOrderExtension) 
+        public OrderService(PlaceOrderPossibilityExtension placOrderPossibilityExtension, PlaceOrderExtension placeOrderExtension) 
         {
-            _mapper = mapper;
             _placOrderPossibilityExtension = placOrderPossibilityExtension;
             _placeOrderExtension = placeOrderExtension;
         }

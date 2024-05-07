@@ -1,5 +1,7 @@
 using API.DTOs.contactDTOs;
 using API.DTOs.loginDTOs;
+using API.DTOs.OrderDTOs;
+using API.DTOs.OrderDTOs.OrderProductDTOs;
 using API.DTOs.PhotoDTOs;
 using API.DTOs.ProductDTOs;
 using API.DTOs.RoleDTOs;
@@ -23,11 +25,17 @@ namespace API.Helpers
 
             CreateMap<ProductRequest, Product>();
             CreateMap<Product, ProductResponse>();
+            CreateMap<Product, OrderProductResponse>()
+                .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.Stocks.FirstOrDefault().Size));
             
             CreateMap<StockRequest, Stock>();
             CreateMap<Stock, StockResponse>();
+            CreateMap<Stock, OrderStockResponse>()
+                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.StockOrders.FirstOrDefault().Quantity));
             
             CreateMap<Photo, PhotoResponse>();
+            
+            CreateMap<Order, OrderResponse>();
         }
     }
 }
