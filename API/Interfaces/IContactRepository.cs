@@ -6,6 +6,7 @@ namespace API.Interfaces
     {
         void Update(Contact contact);
         Task<Contact> AddContactAsync(Contact contact);
+        Task<Contact> GetContactByIdAsync(string id);
         Task<bool> SaveAllAsync();
     }
 }

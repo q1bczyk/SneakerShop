@@ -1,8 +1,8 @@
 namespace API.Errors
 {
-    public class StockException : Exception
+    public class OtherException : Exception
     {
-        public StockException(int statusCode, string message) : base(message)
+        public OtherException(int statusCode, string message) : base(message)
         {
             StatusCode = statusCode;
         }

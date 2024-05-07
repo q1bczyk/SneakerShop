@@ -31,7 +31,7 @@ namespace API.Controllers
                 await _orderService.PlaceOrderAsync(orderRequest);
                 return Ok(orderRequest);
             } 
-            catch(StockException ex)
+            catch(OtherException ex)
             {
                 return StatusCode(ex.StatusCode, ex.Message);
             }

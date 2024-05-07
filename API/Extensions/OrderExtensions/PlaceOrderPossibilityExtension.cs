@@ -26,7 +26,7 @@ namespace API.Extensions
             int stockLeft = await StockExists(orderProduct);
 
             if(stockLeft - orderProduct.Quantity < 0)
-                throw new StockException(400, "Product is already out of stock!");
+                throw new OtherException(400, "Product is already out of stock!");
 
             return true;
         }
@@ -36,7 +36,7 @@ namespace API.Extensions
             var stock = await _stockRepository.GetStock(orderProduct.StockId);
 
             if(stock == null)
-                throw new StockException(404, "Product does not exist!"); 
+                throw new OtherException(404, "Product does not exist!"); 
 
             return stock.Quantity;
         }

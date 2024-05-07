@@ -21,6 +21,11 @@ namespace API.Repository
             return contact;
         }
 
+        public async Task<Contact> GetContactByIdAsync(string id)
+        {
+            return await context.Contacts.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task<bool> SaveAllAsync()
         {
             return await context.SaveChangesAsync() > 0;

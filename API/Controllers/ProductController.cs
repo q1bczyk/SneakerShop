@@ -34,7 +34,7 @@ namespace API.Controllers
             for(int i = 0; i < productRequest.Files.Length; i++)
             {
                 bool isProfilePhoto = false;
-                var fileUploadResult = await _fileService.UploadFileAsync(productRequest.Files[i], addedProduct.Model, addedProduct.Producer);
+                var fileUploadResult = await _fileService.UploadFileAsync(productRequest.Files[i], addedProduct.Model, addedProduct.Producer, addedProduct.Color);
 
                 if(!fileUploadResult.Success)
                     return BadRequest(fileUploadResult.Error);

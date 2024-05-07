@@ -34,7 +34,7 @@ namespace API.Controllers
 
             foreach(var file in photoRequest.Files)
             {
-                FileUploadResult fileUploadResult = await _fileService.UploadFileAsync(file, product.Model, product.Producer);
+                FileUploadResult fileUploadResult = await _fileService.UploadFileAsync(file, product.Model, product.Producer, product.Color);
                 
                 if(!fileUploadResult.Success)
                     return BadRequest(fileUploadResult.Error);
