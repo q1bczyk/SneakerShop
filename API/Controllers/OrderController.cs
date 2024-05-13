@@ -32,9 +32,11 @@ namespace API.Controllers
         public async Task<ActionResult<Order>> AddOrderAsync(OrderRequest orderRequest)
         {
             var userId = HttpContext.User.FindFirst("userId")?.Value;
+            var email = HttpContext.User.FindFirst(JwtRegisteredClaimNames.Name)?.Value;
+
             try
             {
-                await _orderService.PlaceOrderAsync(orderRequest, userId);
+                await _orderService.PlaceOrderAsync(orderRequest, userId, email);
                 return Ok(orderRequest);
             } 
             catch(ControlledException ex)

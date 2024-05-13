@@ -5,6 +5,6 @@ namespace API.Interfaces
 {
     public interface IOrderService
     {
-        Task<Order> PlaceOrderAsync(OrderRequest orderRequest, string userId);
+        Task<Order> PlaceOrderAsync(OrderRequest orderRequest, string userId, string email);
     }
 }

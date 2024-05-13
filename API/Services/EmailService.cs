@@ -46,6 +46,20 @@ namespace API.Services
             return true;
         }
 
+        public async Task<bool> SendOrderConfirmationAsync(string recipient, string orderId)
+        {
+            MailMessage mailMessage = new MailMessage(EmailSender, recipient)
+            {
+                Subject = "Sneakers Shop - Order Confirmation",
+                Body = "Potwierdzenie złożenia zamówienia. Numer twojego zamówienia to: " + orderId,
+            };
+
+            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+            await stmp.SendMailAsync(mailMessage);
+
+            return true;
+        }
+
         public async Task<bool> SendPasswordResetEmailAsync(string recipient, string userId, string token)
         {
             string passwordResetLink = $"{BaseUrl}ChangePassword?userId={userId}&token={token}";
