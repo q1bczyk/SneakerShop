@@ -5,6 +5,7 @@ using API.DTOs.userDTOs;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -150,12 +151,20 @@ namespace API._Controllers
             return Ok("Password has been chagned succesfully!");
         }
 
-        // [HttpPost("AddRoles")]
-        // public async Task<ActionResult<string>> AddRoles()
-        // {
-        //     await _roleManager.CreateAsync(new Role { Name = "User"});
-        //     return Ok("Success");
-        // }
+        [Authorize(Policy = "RequireAdminRole")]
+        [HttpPut("AddEmployer/{userId}")]
+        public async Task<ActionResult<string>> AddEmployer(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if(user == null)
+                return NotFound("User does not exist!");
+
+            await _userManager.AddToRoleAsync(user, "Employee");
+            
+            return Ok("Roles has been added succesful!");
+
+        }
 
     }
 }

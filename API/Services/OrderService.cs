@@ -4,7 +4,7 @@ using API.Errors;
 using API.Extensions;
 using API.Extensions.OrderExtensions;
 using API.Interfaces;
-using API.Repository;
+
 
 namespace API.Services
 {
@@ -12,21 +12,19 @@ namespace API.Services
     {
         private readonly PlaceOrderPossibilityExtension _placOrderPossibilityExtension;
         private readonly PlaceOrderExtension _placeOrderExtension;
-        private readonly IContactRepository _contactRepository;
-        
-        public OrderService(PlaceOrderPossibilityExtension placOrderPossibilityExtension, PlaceOrderExtension placeOrderExtension, IContactRepository contactRepository) 
+        private readonly CheckContactExtension _checkContactExtension;
+
+        public OrderService(PlaceOrderPossibilityExtension placOrderPossibilityExtension, PlaceOrderExtension placeOrderExtension, CheckContactExtension checkContactExtension)
         {
             _placOrderPossibilityExtension = placOrderPossibilityExtension;
             _placeOrderExtension = placeOrderExtension;
-            _contactRepository = contactRepository;
+            _checkContactExtension = checkContactExtension;
         }
 
-        public async Task<Order> PlaceOrderAsync(OrderRequest orderRequest)
+        public async Task<Order> PlaceOrderAsync(OrderRequest orderRequest, string userId)
         {
-            var contact = await _contactRepository.GetContactByIdAsync(orderRequest.ContactId);
-
-            if(contact == null)
-                throw new OtherException(404, "User with Id does not exist!");
+            if(await _checkContactExtension.CheckContact(userId, orderRequest.ContactId) == false)
+                throw new ControlledException(404, "Contact does not exists!");
 
             await _placOrderPossibilityExtension.PlaceOrderPossibility(orderRequest);
             return await _placeOrderExtension.PlaceOrder(orderRequest);

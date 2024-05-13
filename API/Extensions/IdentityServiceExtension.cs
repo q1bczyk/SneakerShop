@@ -43,7 +43,8 @@ public static class IdentityServiceExtension
         services.AddAuthorization(opt => 
         {
             opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
-            opt.AddPolicy("RequireModeratorRole", policy => policy.RequireRole("Admin","Employer"));
+            opt.AddPolicy("RequireModeratorRole", policy => policy.RequireRole("Admin","Employee"));
+            opt.AddPolicy("RequireUserRole", policy => policy.RequireRole("User"));
         });
 
         services.AddSwaggerGen(opt =>

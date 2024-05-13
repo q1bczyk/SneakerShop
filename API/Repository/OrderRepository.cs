@@ -34,6 +34,7 @@ namespace API.Repository
                                 .ThenInclude(op => op.Stock)
                                 .ThenInclude(s => s.Product)
                             .Include(o => o.Contact)
+                            .Skip((page - 1) * pageSize)
                             .ToListAsync();
         }
 

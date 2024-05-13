@@ -22,6 +22,7 @@ namespace api._Services
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Name, user.Email),
+                new Claim("userId", user.Id)
             };
 
             var roles = await userManager.GetRolesAsync(user);

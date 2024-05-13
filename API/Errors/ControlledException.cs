@@ -1,8 +1,8 @@
 namespace API.Errors
 {
-    public class OtherException : Exception
+    public class ControlledException : Exception
     {
-        public OtherException(int statusCode, string message) : base(message)
+        public ControlledException(int statusCode, string message) : base(message)
         {
             StatusCode = statusCode;
         }

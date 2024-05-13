@@ -37,6 +37,7 @@ namespace API.Extensions
             services.AddScoped<IStockOrderRepository, StockOrderRepository>();
             services.AddScoped<PlaceOrderPossibilityExtension>();
             services.AddScoped<PlaceOrderExtension>();
+            services.AddScoped<CheckContactExtension>();
 
             return services;
         }
