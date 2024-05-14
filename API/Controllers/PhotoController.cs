@@ -6,6 +6,7 @@ using AutoMapper;
 using API.Helpers;
 using API.Entities;
 using API.DTOs.PhotoDTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -24,6 +25,7 @@ namespace API.Controllers
             _fileService = fileService;
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPost("{productId}")]
         public async Task<ActionResult<string>> AddPhoto(PhotoRequest photoRequest, string productId)
         {
@@ -52,6 +54,7 @@ namespace API.Controllers
             return Ok("Photo has been added successful!");
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpDelete("{photoId}")]
         public async Task<ActionResult<string>> DeletePhoto(string photoId)
         {            
@@ -67,6 +70,7 @@ namespace API.Controllers
             return Ok("Photo has been deleted successful!");
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPut("{photoId}")]
         public async Task<ActionResult<PhotoResponse>> ChangeProfilePhoto(string photoId, string productId)
         {

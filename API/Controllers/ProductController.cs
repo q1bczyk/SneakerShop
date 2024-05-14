@@ -4,6 +4,7 @@ using API.DTOs.ProductDTOs;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -25,6 +26,7 @@ namespace API.Controllers
             _photoRepository = photoRepository;
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPost]
         public async Task<ActionResult<ProductResponse>> AddProduct(ProductRequest productRequest)
         {
@@ -62,6 +64,7 @@ namespace API.Controllers
             return Ok(_mapper.Map<ProductResponse>(addedProduct));
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPut("editPrice/{productId}")]
         public async Task<ActionResult<ProductResponse>> EditPrice(string productId, PriceRequest priceRequest)
         {
@@ -76,6 +79,7 @@ namespace API.Controllers
             return Ok(_mapper.Map<ProductResponse>(product));
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpDelete("{productId}")]
         public async Task<ActionResult<string>> DeleteProduct(string productId)
         {

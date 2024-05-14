@@ -5,6 +5,7 @@ using API.DTOs.StockDTOs;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -23,6 +24,7 @@ namespace API.Controllers
             _stockRepository = stockRepository;
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPost("{ProductId}")] 
         public async Task<ActionResult<ProductResponse>> AddStock(StockRequest stockRequest, string productId)
         {
@@ -42,6 +44,7 @@ namespace API.Controllers
             return Ok(_mapper.Map<ProductResponse>(product));        
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpPut("{stockId}")]
         public async Task<ActionResult<ProductResponse>> EditStock(string stockId, StockPUTRequest stockPUTRequest)
         {
@@ -58,6 +61,7 @@ namespace API.Controllers
             return Ok(_mapper.Map<StockResponse>(stockToEdit));
         }
 
+        [Authorize(Policy = "RequireModeratorRole")]
         [HttpDelete("{stockId}")]
         public async Task<ActionResult<string>> DeleteStock(string stockId)
         {
