@@ -60,5 +60,20 @@ namespace API.Controllers
             var orders = await _orderRepository.GetAllOrdersAsync(page, pageSize);
             return Ok(_mapper.Map<List<OrderResponse>>(orders));
         }
+
+        [Authorize(Policy = "RequireModeratorRole")]
+        [HttpPut("{orderId}")]
+        public async Task<ActionResult<OrderResponse>> HandleOrder(OrderStatusRequest orderStatusRequest, string orderId)
+        {
+            try
+            {
+                var order = await _orderService.ChangeOrderStatusAsync(orderStatusRequest.Status, orderId);
+                return Ok(_mapper.Map<OrderResponse>(order));
+            }
+            catch(ControlledException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+        }
     }
 }
